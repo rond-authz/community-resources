@@ -79,7 +79,6 @@ const postOptions = {
   },
 }
 
-
 module.exports = {
   getHandler,
   getOptions,
