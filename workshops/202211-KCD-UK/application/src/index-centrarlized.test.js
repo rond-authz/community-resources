@@ -11,8 +11,12 @@ async function launchService(envVariables, logLevel = 'silent') {
   return service
 }
 
+const env = {
+  DOCKER_COMPOSE_MODE: true,
+}
+
 tap.test('store api', async t => {
-  const service = await launchService({})
+  const service = await launchService(env)
   t.teardown(async() => {
     await service.close()
   })
@@ -31,7 +35,7 @@ tap.test('store api', async t => {
 })
 
 tap.test('get inventory api', async t => {
-  const service = await launchService({})
+  const service = await launchService(env)
   t.teardown(async() => {
     await service.close()
   })
@@ -63,7 +67,7 @@ tap.test('get inventory api', async t => {
 })
 
 tap.test('post inventory api', async t => {
-  const service = await launchService({})
+  const service = await launchService(env)
   t.teardown(async() => {
     await service.close()
   })

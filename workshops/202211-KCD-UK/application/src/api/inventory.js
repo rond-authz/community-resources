@@ -11,8 +11,13 @@ function getSecurityQuery(headers) {
 
 async function getHandler(req) {
   const { log, headers } = req
+  if (this.rondStandalone) {
+    log.info('rond is running in standalone mode, here we are going to invoke evaluation')
+  }
+
   const securityQuery = getSecurityQuery(headers)
   log.info({ securityQuery }, 'received security query')
+
   return [
     { name: 't-shirt', sku: 42, price: 16 },
     { name: 'golden necklace', sku: 0, price: 200 },
@@ -41,6 +46,11 @@ const getOptions = {
 async function postHandler(req) {
   const { log, body } = req
   log.info({ body }, 'request body')
+
+  if (this.rondStandalone) {
+    log.info('rond is running in standalone mode, here we are going to invoke evaluation')
+  }
+
   return {
     ok: true,
     itemId: 'todo',
