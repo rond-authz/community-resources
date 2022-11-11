@@ -1,6 +1,7 @@
 'use strict'
 
 const store = require('./api/store')
+const inventory = require('./api/inventory')
 
 // eslint-disable-next-line
 // admin_jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZXRoIiwibmFtZSI6IkJldGggU21pdGgiLCJpYXQiOjE1MTYyMzkwMjIsInJvbGUiOiJhZG1pbiJ9.M_Fe4mtcHCDtmd1CEnPgGo2cY-oXGPBXG4RJAUKNlS4"
@@ -9,4 +10,6 @@ const store = require('./api/store')
 
 module.exports = async function application(service) {
   service.get('/store-info', store.options, store.handler)
+  service.get('/inventory', inventory.getOptions, inventory.getHandler)
+  service.post('/inventory', inventory.postOptions, inventory.postHandler)
 }
