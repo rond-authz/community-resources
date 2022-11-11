@@ -1,6 +1,18 @@
 'use strict'
 
-async function getHandler() {
+function getSecurityQuery(headers) {
+  const rawQuery = headers['x-security-query']
+  if (!rawQuery) {
+    return
+  }
+
+  return JSON.parse(rawQuery)
+}
+
+async function getHandler(req) {
+  const { log, headers } = req
+  const securityQuery = getSecurityQuery(headers)
+  log.info({ securityQuery }, 'received security query')
   return [
     { name: 't-shirt', sku: 42, price: 16 },
     { name: 'golden necklace', sku: 0, price: 200 },
@@ -26,7 +38,9 @@ const getOptions = {
   },
 }
 
-async function postHandler() {
+async function postHandler(req) {
+  const { log, body } = req
+  log.info({ body }, 'request body')
   return {
     ok: true,
     itemId: 'todo',

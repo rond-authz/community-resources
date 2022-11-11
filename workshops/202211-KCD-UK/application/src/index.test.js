@@ -3,9 +3,9 @@
 const tap = require('tap')
 const lc39 = require('@mia-platform/lc39')
 
-async function launchService(envVariables) {
+async function launchService(envVariables, logLevel = 'silent') {
   const service = await lc39('./src/index.js', {
-    logLevel: 'silent',
+    logLevel,
     envVariables,
   })
   return service
@@ -27,24 +27,43 @@ tap.test('store api', async t => {
     storeName: 'KCD Shop',
     address: 'CodeNode, 10 South Pl, London EC2M 7EB, UK',
   })
+  t.end()
 })
 
 tap.test('get inventory api', async t => {
-  const service = await launchService({})
+  const service = await launchService({}, 'info')
   t.teardown(async() => {
     await service.close()
   })
 
-  const response = await service.inject({
-    method: 'GET',
-    url: `/inventory`,
+  t.test('with security query', async t => {
+    const response = await service.inject({
+      method: 'GET',
+      url: `/inventory`,
+      headers: {
+        'x-security-query': '{"sku": 13}',
+      },
+    })
+
+    t.equal(response.statusCode, 200)
+    t.end()
   })
 
-  t.equal(response.statusCode, 200)
+  t.test('without security query', async t => {
+    const response = await service.inject({
+      method: 'GET',
+      url: `/inventory`,
+    })
+
+    t.equal(response.statusCode, 200)
+    t.end()
+  })
+
+  t.end()
 })
 
 tap.test('post inventory api', async t => {
-  const service = await launchService({})
+  const service = await launchService({}, 'info')
   t.teardown(async() => {
     await service.close()
   })
@@ -60,4 +79,5 @@ tap.test('post inventory api', async t => {
   })
 
   t.equal(response.statusCode, 200)
+  t.end()
 })
