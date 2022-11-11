@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: policies
+data:
+  policies.rego: |
+    package policies
+
+    allow_all {
+      true
+    }
+
+    user_has_role(required_role) {
+      authorization_jwt := input.request.headers["Authorization"][0]
+      decoded_jwt_data := io.jwt.decode(authorization_jwt)
+      decoded_jwt := decoded_jwt_data[1]
+      role := decoded_jwt["role"]
+      role == required_role
+    }
+
+    unlogged_request {
+      not input.request.headers["Authorization"]
+    } {
+      count(input.request.headers["Authorization"]) == 0
+    }
+
+    allow_create_new_inventory_item {
+      user_has_role("admin")
+    }
+
+    filter_inventory {}
+
+    protect_inventory_info [response] {
+      user_has_role("admin")
+      response := input.response.body
+    } {
+      user_has_role("user")
+      inventory_response_list := input.response.body
+      result := [new_item |
+        item := inventory_response_list[_]
+        new_item = object.remove(item, ["sku"])
+      ]
+      response := result
+    } {
+      unlogged_request
+      inventory_response_list := input.response.body
+      result := [new_item |
+        item := inventory_response_list[_]
+        new_item = object.remove(item, ["sku", "price"])
+      ]
+      response := result
+    }
+
+    data_filter {
+      resource := data.resources[_]
+      resource.name == "Jane"
+      resource.organization == "rönd-authz"
+    }
+
+    basic_info_parser [response] {
+      responseBody := input.response.body
+      # https://www.openpolicyagent.org/docs/latest/policy-reference/#builtin-object-jsonremove
+      response := object.filter(responseBody.request, ["path", "method"])
+    }
