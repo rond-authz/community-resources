@@ -18,8 +18,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+      working-directory: workshops/202211-KCD-UK/application
     - run: npm test
+      working-directory: workshops/202211-KCD-UK/application
     - run: npm run coverage
+      working-directory: workshops/202211-KCD-UK/application
 
   build:
     name: Build docker image
@@ -67,7 +70,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./workshops/202211-KCD-UK/application
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
