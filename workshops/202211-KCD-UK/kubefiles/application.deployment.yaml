@@ -22,7 +22,7 @@ spec:
           - name: HTTP_PORT
             value: "9876"
           - name: TARGET_SERVICE_HOST
-            value: localhost:8080
+            value: localhost:3000
           - name: OPA_MODULES_DIRECTORY
             value: /configurations/opa
           - name: API_PERMISSIONS_FILE_PATH
@@ -35,13 +35,13 @@ spec:
           - mountPath: /configurations
             name: extended-oas
       - name: application
-        image: davidebianchi/echo-service # TODO: change with new microservice application
+        image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 8080
+        - containerPort: 3000
       volumes:
         - name: policies
           configMap:

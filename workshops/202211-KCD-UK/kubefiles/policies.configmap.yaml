@@ -28,7 +28,18 @@ data:
       user_has_role("admin")
     }
 
-    filter_inventory {}
+    filter_inventory {
+      user_has_role("admin")
+      query := data.resources[_]
+    } {
+      user_has_role("user")
+      query := data.resources[_]
+      query.sku > 0
+    } {
+      unlogged_request
+      query := data.resources[_]
+      query.sku > 0
+    }
 
     protect_inventory_info [response] {
       user_has_role("admin")
