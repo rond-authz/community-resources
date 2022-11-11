@@ -61,15 +61,3 @@ data:
       ]
       response := result
     }
-
-    data_filter {
-      resource := data.resources[_]
-      resource.name == "Jane"
-      resource.organization == "rönd-authz"
-    }
-
-    basic_info_parser [response] {
-      responseBody := input.response.body
-      # https://www.openpolicyagent.org/docs/latest/policy-reference/#builtin-object-jsonremove
-      response := object.filter(responseBody.request, ["path", "method"])
-    }
