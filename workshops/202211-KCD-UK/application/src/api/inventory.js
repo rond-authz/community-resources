@@ -69,13 +69,10 @@ const postOptions = {
     },
     response: {
       200: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            ok: { type: 'boolean' },
-            itemId: { type: 'string' },
-          },
+        type: 'object',
+        properties: {
+          ok: { type: 'boolean' },
+          itemId: { type: 'string' },
         },
       },
     },
