@@ -2,7 +2,6 @@ FROM node:16.18.0-alpine as build
 
 WORKDIR /build-dir
 
-COPY .npmrc .
 COPY package.json .
 COPY package-lock.json .
 
