@@ -1,0 +1,24 @@
+version: '3.6'
+services:
+  rond:
+    image: 'ghcr.io/rond-authz/rond:main'
+    container_name: 'rond-standlaon'
+    restart: 'unless-stopped'
+    environment:
+      - HTTP_PORT=9876
+      - TARGET_SERVICE_HOST="localhost:3000"
+      - OPA_MODULES_DIRECTORY="/configurations/opa"
+      - API_PERMISSIONS_FILE_PATH="/configurations/manualroutes.json"
+      - STANDALONE=true
+    ports:
+      - '9876'
+    volumes:
+      - './policies.rego:/configurations/opa/policies.rego:ro'
+      - './manualroutes.json:/configurations/manualroutes.json'
+  
+  app:
+    image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
+    ports:
+      - '3000'
+    environment:
+      - DOCKER_COMPOSE_MODE=true

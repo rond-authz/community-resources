@@ -1,0 +1,32 @@
+{
+  "paths": {
+    "/store-info": {
+      "get": {
+        "x-permission": {
+          "allow": "allow_all"
+        }
+      }
+    },
+    "/inventory": {
+      "post": {
+        "x-permission": {
+          "allow": "allow_create_new_inventory_item"
+        }
+      },
+      "get": {
+        "x-rond": {
+          "requestFlow": {
+            "policyName": "filter_inventory",
+            "generateQuery": true,
+            "queryOptions": {
+              "headerName": "x-security-query"
+            }
+          },
+          "responseFlow": {
+            "policyName": "protect_inventory_info"
+          }
+        }
+      }
+    }
+  }
+}
