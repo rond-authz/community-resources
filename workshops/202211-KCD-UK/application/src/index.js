@@ -2,9 +2,12 @@
 
 const fastifyEnv = require('@fastify/env')
 const fp = require('fastify-plugin')
+const mongodb = require('@fastify/mongodb')
 
 const store = require('./api/store')
 const inventory = require('./api/inventory')
+
+
 
 // eslint-disable-next-line
 // admin_jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZXRoIiwibmFtZSI6IkJldGggU21pdGgiLCJpYXQiOjE1MTYyMzkwMjIsInJvbGUiOiJhZG1pbiJ9.M_Fe4mtcHCDtmd1CEnPgGo2cY-oXGPBXG4RJAUKNlS4"
@@ -33,5 +36,9 @@ async function handlers(fastify) {
 module.exports = async function application(fastify, opts) {
   fastify
     .register(fastifyEnv, { schema: envSchema, data: [process.env, opts], env: false })
+    .register(mongodb, {
+      forceClose: true,
+      url: 'mongodb://localhost:27017/demo-app'
+    })
     .register(fp(handlers))
 }

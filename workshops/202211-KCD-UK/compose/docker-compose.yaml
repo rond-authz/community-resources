@@ -16,9 +16,30 @@ services:
       - './policies.rego:/configurations/opa/policies.rego:ro'
       - './manualroutes.json:/configurations/manualroutes.json'
   
+  mongo:
+    image: mongo
+    container_name: mongo
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+    volumes:
+      - ../database:/data/db
+    networks:
+      - mongodb_network
+  
   app:
     image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
     ports:
       - '3000'
     environment:
       - DOCKER_COMPOSE_MODE=true
+    depends_on:
+      - mongo
+    networks:
+      - mongodb_network
+  
+networks:
+  mongodb_network:
+    name: mongodb_network

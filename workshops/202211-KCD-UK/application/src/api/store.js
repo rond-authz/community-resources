@@ -5,11 +5,12 @@ async function handler(req) {
   if (this.rondStandalone) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
   }
-
-  return {
-    storeName: 'KCD Shop',
-    address: 'CodeNode, 10 South Pl, London EC2M 7EB, UK',
-  }
+  
+  const stores = await this.mongo.client.db().collection('stores');
+  const docs = await stores.findOne()
+  const { _id, ...data } = docs;
+  
+  return data;
 }
 
 const options = {
