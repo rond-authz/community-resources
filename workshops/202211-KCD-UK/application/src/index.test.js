@@ -320,6 +320,144 @@ tap.test('post inventory api', async t => {
   t.end()
 })
 
+tap.test('delete inventory api', async t => {
+  const mongoClient = new MongoClient(CI_CONNECTION_STRING)
+  const service = await launchService({})
+  t.teardown(async() => {
+    await service.close()
+    await mongoClient.db().dropCollection(INVENTORY_COLLECTION_NAME)
+    await mongoClient.db().dropDatabase()
+    await mongoClient.close()
+  })
+
+  t.test('distributed', async t => {
+    t.test('deletion ok', async t => {
+      await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+        .insertOne({ name: 'item1' })
+      const { statusCode } = await service.inject({
+        method: 'DELETE',
+        url: `/inventory`,
+        query: {
+          name: 'item1',
+        },
+      })
+
+      t.equal(statusCode, 204)
+      const foundItem = await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+        .findOne({ name: 'item1' })
+      t.notOk(foundItem)
+      t.end()
+    })
+
+    t.test('deletion on unknown item', async t => {
+      const { statusCode } = await service.inject({
+        method: 'DELETE',
+        url: `/inventory`,
+        query: {
+          name: 'not existing',
+        },
+      })
+
+      t.equal(statusCode, 204)
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.test('centralized', async t => {
+    const service = await launchService(envForCentralizedConfig)
+    t.teardown(async() => {
+      await service.close()
+    })
+
+    await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+      .insertOne({ name: 't-shirt-that-remains-not-deleted' })
+
+    t.test('ok', async t => {
+      await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+        .insertOne({ name: 'item1' })
+
+      const standaloneRond = nock('http://rondalone/', {
+        reqheaders: {
+          authorization: 'the-header-from-the-client',
+        },
+      })
+        .delete('/eval/inventory')
+        .reply(200)
+
+      const response = await service.inject({
+        method: 'DELETE',
+        url: `/inventory`,
+        headers: {
+          authorization: 'the-header-from-the-client',
+        },
+        query: {
+          name: 'item1',
+        },
+      })
+
+      t.equal(response.statusCode, 204, response.payload)
+      const foundItem = await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+        .findOne({ name: 'item1' })
+      t.notOk(foundItem)
+      t.ok(standaloneRond.isDone())
+
+      t.end()
+    })
+
+    t.test('not ok', async t => {
+      const standaloneRond = nock('http://rondalone/')
+        .delete('/eval/inventory')
+        .reply(403, { error: 'forbidden' })
+
+      const { statusCode, payload } = await service.inject({
+        method: 'DELETE',
+        url: `/inventory`,
+        query: {
+          name: 't-shirt-that-remains-not-deleted',
+        },
+      })
+
+      t.equal(statusCode, 403, payload)
+      const foundItem = await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+        .findOne({ name: 't-shirt-that-remains-not-deleted' })
+      t.ok(foundItem)
+
+      t.ok(standaloneRond.isDone())
+
+      t.end()
+    })
+
+    t.test('not ok on non-forbidden error', async t => {
+      const standaloneRond = nock('http://rondalone/')
+        .delete('/eval/inventory')
+        .reply(400, { error: 'forbidden' })
+
+      const response = await service.inject({
+        method: 'DELETE',
+        url: `/inventory`,
+        query: {
+          name: 't-shirt-that-remains-not-deleted',
+        },
+      })
+
+      t.equal(response.statusCode, 500, response.payload)
+      const foundItem = await mongoClient.db().collection(INVENTORY_COLLECTION_NAME)
+        .findOne({ name: 't-shirt-that-remains-not-deleted' })
+      t.ok(foundItem)
+
+      t.ok(standaloneRond.isDone())
+
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.end()
+})
+
 tap.test('OAS documentations', async t => {
   const service = await launchService({})
   t.teardown(async() => {

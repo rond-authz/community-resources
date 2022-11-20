@@ -27,6 +27,7 @@ async function handlers(fastify) {
   fastify.get('/store-info', store.options, store.handler)
   fastify.get('/inventory', inventory.getOptions, inventory.getHandler)
   fastify.post('/inventory', inventory.postOptions, inventory.postHandler)
+  fastify.delete('/inventory', inventory.deleteOptions, inventory.deleteHandler)
   fastify.log.info('router setup done')
 }
 

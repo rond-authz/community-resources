@@ -128,10 +128,55 @@ const postOptions = {
   },
 }
 
+
+async function deleteHandler(req, reply) {
+  const { log, query, headers } = req
+  log.info({ query }, 'request body')
+
+  if (this.rondStandalone) {
+    log.info('rond is running in standalone mode, here we are going to invoke evaluation')
+    await rondStandaloneEval(this.rondStandaloneUrl, 'delete', 'inventory', {
+      authorization: headers['authorization'],
+    })
+  }
+
+  try {
+    await this.mongo.client.db()
+      .collection(INVENTORY_COLLECTION_NAME)
+      .deleteOne({ name: query.name })
+  } catch (error) {
+    log.error(error, 'failed deletion')
+    throw new Error('failed database deletion')
+  }
+
+  log.info('deleted item')
+  reply.status(204)
+}
+
+const deleteOptions = {
+  schema: {
+    tags: ['KCD Store'],
+    headers: {
+      authorization: { type: 'string' },
+    },
+    querystring: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+      },
+    },
+    response: {
+      204: {},
+    },
+  },
+}
+
 module.exports = {
   getHandler,
   getOptions,
   postHandler,
   postOptions,
+  deleteHandler,
+  deleteOptions,
   INVENTORY_COLLECTION_NAME,
 }
