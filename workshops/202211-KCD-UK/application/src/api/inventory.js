@@ -36,7 +36,9 @@ async function getHandler(req) {
   let securityQuery
   if (this.rondStandalone) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
-    const { securityQuery: secQ } = await rondStandaloneEval(this.rondStandaloneUrl, 'get', 'inventory', headers)
+    const { securityQuery: secQ } = await rondStandaloneEval(this.rondStandaloneUrl, 'get', 'inventory', {
+      authorization: headers['authorization'],
+    })
     securityQuery = secQ
   } else {
     securityQuery = getSecurityQuery(headers)
@@ -78,9 +80,8 @@ async function postHandler(req) {
   if (this.rondStandalone) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
     await rondStandaloneEval(this.rondStandaloneUrl, 'post', 'inventory', {
-      ...headers,
-      'content-type': 'application/json',
-    })
+      authorization: headers['authorization'],
+    }, body)
   }
 
   let result
