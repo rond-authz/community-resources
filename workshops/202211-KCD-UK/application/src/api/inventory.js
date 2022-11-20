@@ -128,7 +128,6 @@ const postOptions = {
   },
 }
 
-
 async function deleteHandler(req, reply) {
   const { log, query, headers } = req
   log.info({ query }, 'request body')
