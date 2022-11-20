@@ -9,6 +9,7 @@ async function handler() {
 
 const options = {
   schema: {
+    tags: ['KCD Store'],
     headers: {
       authorization: { type: 'string' },
     },

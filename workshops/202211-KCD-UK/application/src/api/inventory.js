@@ -57,6 +57,7 @@ async function getHandler(req) {
 
 const getOptions = {
   schema: {
+    tags: ['KCD Store'],
     headers: {
       authorization: { type: 'string' },
     },
@@ -103,6 +104,7 @@ async function postHandler(req) {
 
 const postOptions = {
   schema: {
+    tags: ['KCD Store'],
     headers: {
       authorization: { type: 'string' },
     },
