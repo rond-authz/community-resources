@@ -13,7 +13,7 @@ services:
       - BINDINGS_CRUD_SERVICE_URL=http://placeholder/bindings
       - LOG_LEVEL=trace
     ports:
-      - '9876'
+      - 9876:9876
     volumes:
       - './policies.rego:/configurations/opa/policies.rego:ro'
       - './manualroutes.json:/configurations/manualroutes.json'
@@ -39,11 +39,13 @@ services:
     ports:
       - '40000:3000'
     environment:
+      - LOG_LEVEL=trace
       - DOCKER_COMPOSE_MODE=true
-      - MONGODB_URL=mongodb://localhost:27017/kcdapp
-      - ROND_STANDALONE_URL=http://localhost:9876/
+      - MONGODB_URL=mongodb://mongo:27017/kcdapp
+      - ROND_STANDALONE_URL=http://rond:9876
     depends_on:
       - mongo
+      - rond
     networks:
       - kcd_app_network
   

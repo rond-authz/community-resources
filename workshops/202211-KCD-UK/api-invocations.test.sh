@@ -17,6 +17,7 @@ curl localhost:30000/inventory \
 
 # Create invetory item
 curl -X POST localhost:30000/inventory \
+  -H 'content-type: application/json' \
   --data '{"name":"fidget spinner", "sku": 32, "price": 5}'
 
 ## User
