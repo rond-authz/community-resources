@@ -47,7 +47,8 @@ By default the application running with docker compose will be reachable on port
 
 - `GET /store-info`: publicly available, returns some info.
 - `GET /inventory`: publicly available, returns available items in your database; the behaviour changes based on the user privileges.
-- `POST /inventory`: only accessible by admin users, lets them add new items in your database.
+- `POST /inventory`: only accessible by admin users, lets you add new items in your database.
+- `DELETE /inventory`: only accessible by admin users, lets you delete items from your database.
 
 Please note that currently there is [limited support on policy for response flow](https://github.com/rond-authz/rond/issues/113), therefore the `GET /inventory` API will return limited data only with the Kubernetes setup.
 
