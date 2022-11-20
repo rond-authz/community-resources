@@ -77,7 +77,10 @@ async function postHandler(req) {
 
   if (this.rondStandalone) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
-    await rondStandaloneEval(this.rondStandaloneUrl, 'post', 'inventory', headers)
+    await rondStandaloneEval(this.rondStandaloneUrl, 'post', 'inventory', {
+      ...headers,
+      'content-type': 'application/json',
+    })
   }
 
   let result

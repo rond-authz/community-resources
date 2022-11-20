@@ -5,13 +5,12 @@ services:
     container_name: rond-standalone-kcd-workshop
     restart: unless-stopped
     environment:
+      - LOG_LEVEL=trace
       - HTTP_PORT=9876
-      - TARGET_SERVICE_HOST=localhost:3000
       - OPA_MODULES_DIRECTORY=/configurations/opa
       - API_PERMISSIONS_FILE_PATH=/configurations/manualroutes.json
       - STANDALONE=true
       - BINDINGS_CRUD_SERVICE_URL=http://placeholder/bindings
-      - LOG_LEVEL=trace
     ports:
       - 9876:9876
     volumes:

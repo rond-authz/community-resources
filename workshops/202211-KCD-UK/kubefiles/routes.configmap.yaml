@@ -8,15 +8,19 @@ data:
       "paths": {
         "/store-info": {
           "get": {
-            "x-permission": {
-              "allow": "allow_all"
+            "x-rond": {
+              "requestFlow": {
+                "policyName": "allow_all"
+              }
             }
           }
         },
         "/inventory": {
           "post": {
-            "x-permission": {
-              "allow": "allow_create_new_inventory_item"
+            "x-rond": {
+              "requestFlow": {
+                "policyName": "allow_create_new_inventory_item"
+              }
             }
           },
           "get": {

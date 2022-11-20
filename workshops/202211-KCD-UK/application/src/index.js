@@ -7,7 +7,6 @@ const mongodb = require('@fastify/mongodb')
 const store = require('./api/store')
 const inventory = require('./api/inventory')
 
-
 // eslint-disable-next-line
 // admin_jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZXRoIiwibmFtZSI6IkJldGggU21pdGgiLCJpYXQiOjE1MTYyMzkwMjIsInJvbGUiOiJhZG1pbiJ9.M_Fe4mtcHCDtmd1CEnPgGo2cY-oXGPBXG4RJAUKNlS4"
 // eslint-disable-next-line
