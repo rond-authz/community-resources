@@ -9,7 +9,7 @@ Welcome to this workshop; today we are going to use Rönd to protect a simple ap
 Create your cluster
 
 ```sh
-$ kind create cluster --name=rond-kcduk --config ./kubefiles/kind.config.yaml
+kind create cluster --name=rond-kcduk --config ./kubefiles/kind.config.yaml
 ```
 Run the application
 
