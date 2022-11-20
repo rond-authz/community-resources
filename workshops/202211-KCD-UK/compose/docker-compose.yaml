@@ -37,7 +37,7 @@ services:
     image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
     container_name: app-kcd-workshop
     ports:
-      - '3000:30000'
+      - '40000:3000'
     environment:
       - DOCKER_COMPOSE_MODE=true
       - MONGODB_URL=mongodb://localhost:27017/kcdapp

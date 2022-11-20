@@ -19,6 +19,10 @@ sh ./kubefiles/boot.sh
 
 Note: you can run this script whenever you have done some changes and want to deploy them in your cluster
 
+```sh
+kind delete cluster --name=rond-kcduk
+```
+
 ### Running with docker compose
 
 Boot the application
