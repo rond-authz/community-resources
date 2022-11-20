@@ -57,6 +57,9 @@ async function getHandler(req) {
 
 const getOptions = {
   schema: {
+    headers: {
+      authorization: { type: 'string' },
+    },
     response: {
       200: {
         type: 'array',
@@ -100,6 +103,9 @@ async function postHandler(req) {
 
 const postOptions = {
   schema: {
+    headers: {
+      authorization: { type: 'string' },
+    },
     body: {
       type: 'object',
       properties: {

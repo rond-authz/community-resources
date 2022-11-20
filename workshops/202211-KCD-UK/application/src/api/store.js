@@ -9,6 +9,9 @@ async function handler() {
 
 const options = {
   schema: {
+    headers: {
+      authorization: { type: 'string' },
+    },
     response: {
       200: {
         type: 'object',

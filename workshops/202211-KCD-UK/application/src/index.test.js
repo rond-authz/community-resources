@@ -320,6 +320,21 @@ tap.test('post inventory api', async t => {
   t.end()
 })
 
+tap.test('OAS documentations', async t => {
+  const service = await launchService({})
+  t.teardown(async() => {
+    await service.close()
+  })
+
+  const { statusCode, payload } = await service.inject({
+    method: 'GET',
+    url: `/documentation/json`,
+  })
+
+  t.equal(statusCode, 200)
+  t.ok(payload)
+})
+
 async function populateInventoryForTests(t, client) {
   await client.db().collection(INVENTORY_COLLECTION_NAME)
     .insertMany([
