@@ -17,7 +17,9 @@ const envSchema = {
   type: 'object',
   properties: {
     DOCKER_COMPOSE_MODE: { type: 'boolean' },
+    MONGODB_URL: { type: 'string' },
   },
+  required: ['MONGODB_URL'],
 }
 
 async function handlers(fastify) {
@@ -32,12 +34,17 @@ async function handlers(fastify) {
   fastify.log.info('router setup done')
 }
 
+async function registerMongo(fastify) {
+  const { config: { MONGODB_URL } } = fastify
+  fastify.register(mongodb, {
+    forceClose: true,
+    url: MONGODB_URL,
+  })
+}
+
 module.exports = async function application(fastify, opts) {
   fastify
     .register(fastifyEnv, { schema: envSchema, data: [process.env, opts], env: false })
-    .register(mongodb, {
-      forceClose: true,
-      url: 'mongodb://localhost:27017/demo-app',
-    })
+    .register(fp(registerMongo, { decorators: { fastify: ['config'] } }))
     .register(fp(handlers))
 }

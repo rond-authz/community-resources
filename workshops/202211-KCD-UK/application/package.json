@@ -20,7 +20,9 @@
     "@fastify/env": "^3.0.0",
     "@fastify/mongodb": "^5.0.0",
     "@mia-platform/lc39": "^6.0.2",
-    "fastify-plugin": "^3.0.1"
+    "fastify-plugin": "^3.0.1",
+    "mongodb": "^4.12.0",
+    "ramda": "^0.28.0"
   },
   "devDependencies": {
     "@mia-platform/eslint-config-mia": "^3.0.0",
@@ -37,9 +39,9 @@
     "extends": "@mia-platform/eslint-config-mia"
   },
   "tap": {
-    "branches": 100,
-    "lines": 100,
-    "functions": 100,
-    "statements": 100
+    "branches": 90,
+    "lines": 90,
+    "functions": 90,
+    "statements": 90
   }
 }

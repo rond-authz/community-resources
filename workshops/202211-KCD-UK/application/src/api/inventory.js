@@ -1,5 +1,7 @@
 'use strict'
 
+const INVENTORY_COLLECTION_NAME = 'inventory'
+
 function getSecurityQuery(headers) {
   const rawQuery = headers['x-security-query']
   if (!rawQuery) {
@@ -16,13 +18,15 @@ async function getHandler(req) {
   }
 
   const securityQuery = getSecurityQuery(headers)
-  log.info({ securityQuery }, 'received security query')
+  if (securityQuery) {
+    log.info({ securityQuery }, 'received security query')
+  }
 
-  return [
-    { name: 't-shirt', sku: 42, price: 16 },
-    { name: 'golden necklace', sku: 0, price: 200 },
-    { name: 'wine', sku: 2, price: 6 },
-  ]
+  const inventory = await this.mongo.client.db().collection(INVENTORY_COLLECTION_NAME)
+  const inventoryItems = await (await inventory.find(securityQuery || {})).toArray()
+  log.info({ foundItems: inventoryItems.length }, 'inventory items fetched')
+
+  return inventoryItems
 }
 
 const getOptions = {
@@ -51,10 +55,18 @@ async function postHandler(req) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
   }
 
-  return {
-    ok: true,
-    itemId: 'todo',
+  let result
+  try {
+    result = await this.mongo.client.db()
+      .collection(INVENTORY_COLLECTION_NAME)
+      .insertOne(body)
+  } catch (error) {
+    log.error(error, 'failed insertion')
+    throw new Error('failed database insertion')
   }
+
+  log.info({ createdId: result.insertedId }, 'created item')
+  return { ok: true, itemId: result.insertedId }
 }
 
 const postOptions = {
@@ -84,4 +96,5 @@ module.exports = {
   getOptions,
   postHandler,
   postOptions,
+  INVENTORY_COLLECTION_NAME,
 }
