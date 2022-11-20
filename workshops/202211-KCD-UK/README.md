@@ -19,3 +19,17 @@ sh ./kubefiles/boot.sh
 
 Note: you can run this script whenever you have done some changes and want to deploy them in your cluster
 
+### Running with docker compose
+
+Boot the application
+
+```sh
+docker-compose -f compose/docker-compose.yaml up
+```
+
+Shut down
+
+
+```sh
+docker-compose -f compose/docker-compose.yaml down
+```

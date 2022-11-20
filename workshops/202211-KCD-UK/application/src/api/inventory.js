@@ -1,6 +1,26 @@
 'use strict'
 
+const axios = require('axios')
+const createError = require('http-errors')
+
 const INVENTORY_COLLECTION_NAME = 'inventory'
+
+async function rondStandaloneEval(rondStandaloneUrl, apiVerb, apiPath, headers) {
+  try {
+    const { headers: responseHeaders } = await axios({
+      method: apiVerb,
+      url: `${rondStandaloneUrl}/eval/${apiPath}`,
+      path: apiPath,
+      headers,
+    })
+    return { securityQuery: getSecurityQuery(responseHeaders) }
+  } catch (error) {
+    if (error?.response?.status === 403) {
+      throw createError(403, 'asd')
+    }
+    throw error
+  }
+}
 
 function getSecurityQuery(headers) {
   const rawQuery = headers['x-security-query']
@@ -13,11 +33,15 @@ function getSecurityQuery(headers) {
 
 async function getHandler(req) {
   const { log, headers } = req
+  let securityQuery
   if (this.rondStandalone) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
+    const { securityQuery: secQ } = await rondStandaloneEval(this.rondStandaloneUrl, 'get', 'inventory', headers)
+    securityQuery = secQ
+  } else {
+    securityQuery = getSecurityQuery(headers)
   }
 
-  const securityQuery = getSecurityQuery(headers)
   if (securityQuery) {
     log.info({ securityQuery }, 'received security query')
   }
@@ -48,11 +72,12 @@ const getOptions = {
 }
 
 async function postHandler(req) {
-  const { log, body } = req
+  const { log, body, headers } = req
   log.info({ body }, 'request body')
 
   if (this.rondStandalone) {
     log.info('rond is running in standalone mode, here we are going to invoke evaluation')
+    await rondStandaloneEval(this.rondStandaloneUrl, 'post', 'inventory', headers)
   }
 
   let result
