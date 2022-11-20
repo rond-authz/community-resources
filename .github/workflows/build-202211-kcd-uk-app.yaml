@@ -17,6 +17,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.8.0
     - run: npm ci
       working-directory: workshops/202211-KCD-UK/application
     - run: npm test
