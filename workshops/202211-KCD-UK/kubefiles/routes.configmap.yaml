@@ -23,6 +23,13 @@ data:
               }
             }
           },
+          "delete": {
+            "x-rond": {
+              "requestFlow": {
+                "policyName": "allow_delete_inventory_item"
+              }
+            }
+          },
           "get": {
             "x-rond": {
               "requestFlow": {

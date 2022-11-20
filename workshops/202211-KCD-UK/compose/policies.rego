@@ -22,6 +22,10 @@ allow_create_new_inventory_item {
   user_has_role("admin")
 }
 
+allow_delete_inventory_item {
+  user_has_role("admin")
+}
+
 filter_inventory {
   user_has_role("admin")
   query := data.resources[_]
