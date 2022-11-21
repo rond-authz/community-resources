@@ -2,7 +2,86 @@
 
 Welcome to this workshop; today we are going to use Rönd to protect a simple application!
 
-## Environment requirements
+## About the App
+
+Today we are going to protect a simple Node.js application that lets you manage a store inventory; it is connected to a local MongoDB instance for data storage and exposes a few APIs:
+
+- `GET /store-info`: returns generic store information
+- `GET /inventory`: returns a list of available inventory items
+- `POST /inventory`: lets you add a new inventory item
+- `DELETE /inventory`: lets you delete an inventory item by its name
+
+### What is an item?
+
+Each inventory item has three fields:
+
+ - `name`: the item name (of course)
+ - `sku`: stock keeping unit (the amount of such item in stock)
+ - `price`: the price for the item
+
+### What do want to obtain?
+
+- `GET /store-info`: publicly available, returns some info.
+- `GET /inventory`: publicly available, returns available items in your database; the behaviour changes based on the user privileges.
+- `POST /inventory`: only accessible by admin users, lets you add new items in your database.
+- `DELETE /inventory`: only accessible by admin users, lets you delete items from your database.
+
+Please note that there is currently [limited support on policy for response flow](https://github.com/rond-authz/rond/issues/113), therefore the `GET /inventory` API will return limited data only with the Kubernetes setup.
+
+## Workshop walkthrough
+
+### Step 1 - Application
+
+To start the workshop checkout the branch first branch with:
+
+```sh
+git checkout workshops/202211-KCD-UK-step1
+```
+
+In this step a simple Node.js application can be executed in your environment; this application has no security protection in place so all the APIs are publicly accessible by anyone.
+
+#### TODO
+
+In order to protect it let's install Rönd!
+
+ - configure Rönd as a sidecar (or standalone for docker-compose setup)
+ - prepare _policies_ and _OAS_ file
+ - make sure the application has proper environment variables (specifically for standalone setup `DOCKER_COMPOSE_MODE` and `ROND_STANDALONE_URL` are required!)
+ - test your APIs, every one of them should result in a 403; Rönd is successfully blocking all the APIs.
+
+### Step 2 - Protect API accesses
+
+```sh
+git checkout workshops/202211-KCD-UK-step2
+```
+
+Now that Rönd is blocking APIs we need to open the ones we need based on our requirements.
+
+#### TODO
+ 
+  - make `GET /store-info` publicly available
+    - verify it is available even without the `Authorization` header.
+  - make `POST /inventory` available to administrators
+    - verify only administrator user can access the API
+  - make `DELETE /inventory` available to administrators
+    - verify only administrator user can access the API
+
+### Step 3 - Protect data accesses
+
+Now that we have protected the majority of the APIs lets focus on the `GET /inventory` and how to protect data with Rönd!
+
+```sh
+git checkout workshops/202211-KCD-UK-step3
+```
+
+#### TODO
+
+  - make `GET /inventory` publicly available but behaving differently based on the user:
+      - administrator user can see all the items
+      - logged users can only see items with `sku > 0` and have visiblity only for name and price
+      - non logged users can only see items with `sku > 0` and have visiblity only for name
+
+## Environment requirements and available setup
 
 ### Kubernetes setup with Kind
 
@@ -43,26 +122,19 @@ By default the application running with docker compose will be reachable on port
 
 ## Invoke APIs
 
-### Available APIs
-
-- `GET /store-info`: publicly available, returns some info.
-- `GET /inventory`: publicly available, returns available items in your database; the behaviour changes based on the user privileges.
-- `POST /inventory`: only accessible by admin users, lets you add new items in your database.
-- `DELETE /inventory`: only accessible by admin users, lets you delete items from your database.
-
-Please note that currently there is [limited support on policy for response flow](https://github.com/rond-authz/rond/issues/113), therefore the `GET /inventory` API will return limited data only with the Kubernetes setup.
+To invoke the APIs there is a [Postman collection](./postman_collection.json) available in the repository but use whatever client you wish.
 
 ### Available users
 
-The following JWT can be used to simulate different users.
+To test APIs with different user privileges two JWT are available, one for an Administrator user, the other one for a regular logged user.
 
-To perform requests as an Administrator use the following JWT:
+To perform requests as an **Administrator** use the following JWT:
 
 ```
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZXRoIiwibmFtZSI6IkJldGggU21pdGgiLCJpYXQiOjE1MTYyMzkwMjIsInJvbGUiOiJhZG1pbiJ9.M_Fe4mtcHCDtmd1CEnPgGo2cY-oXGPBXG4RJAUKNlS4
 ```
 
-To perform requests as a regular User use this JWT, instead:
+To perform requests as a **regular User** use this JWT, instead:
 
 ```
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZXRoIiwibmFtZSI6IkplcnJ5IFNtaXRoIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoidXNlciJ9.LjI6XBWM0z94eUP0NLiRqlXPSzorsOnJ7J8jPfN-JNc
