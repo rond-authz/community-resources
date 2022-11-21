@@ -1,0 +1,53 @@
+version: '3.6'
+services:
+  rond:
+    image: ghcr.io/rond-authz/rond:main
+    container_name: rond-standalone-kcd-workshop
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=trace
+      - HTTP_PORT=9876
+      - OPA_MODULES_DIRECTORY=/configurations/opa
+      - API_PERMISSIONS_FILE_PATH=/configurations/manualroutes.json
+      - STANDALONE=true
+      - BINDINGS_CRUD_SERVICE_URL=http://placeholder/bindings
+    ports:
+      - 9876:9876
+    volumes:
+      - './policies.rego:/configurations/opa/policies.rego:ro'
+      - './manualroutes.json:/configurations/manualroutes.json'
+    networks:
+      - kcd_app_network
+
+  mongo:
+    image: mongo
+    container_name: mongo-kcd-workshop
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+    volumes:
+      - ../database:/data/db
+    networks:
+      - kcd_app_network
+  
+  app:
+    image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
+    container_name: app-kcd-workshop
+    ports:
+      - '40000:3000'
+    environment:
+      - LOG_LEVEL=trace
+      - DOCKER_COMPOSE_MODE=true
+      - MONGODB_URL=mongodb://mongo:27017/kcdapp
+      - ROND_STANDALONE_URL=http://rond:9876
+    depends_on:
+      - mongo
+      - rond
+    networks:
+      - kcd_app_network
+  
+networks:
+  kcd_app_network:
+    name: kcd_app_network

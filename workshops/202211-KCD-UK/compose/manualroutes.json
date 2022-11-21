@@ -1,0 +1,43 @@
+{
+  "paths": {
+    "/store-info": {
+      "get": {
+        "x-rond": {
+          "requestFlow": {
+            "policyName": "allow_all"
+          }
+        }
+      }
+    },
+    "/inventory": {
+      "post": {
+        "x-rond": {
+          "requestFlow": {
+            "policyName": "allow_create_new_inventory_item"
+          }
+        }
+      },
+      "delete": {
+        "x-rond": {
+          "requestFlow": {
+            "policyName": "allow_delete_inventory_item"
+          }
+        }
+      },
+      "get": {
+        "x-rond": {
+          "requestFlow": {
+            "policyName": "filter_inventory",
+            "generateQuery": true,
+            "queryOptions": {
+              "headerName": "x-security-query"
+            }
+          },
+          "responseFlow": {
+            "policyName": "protect_inventory_info"
+          }
+        }
+      }
+    }
+  }
+}

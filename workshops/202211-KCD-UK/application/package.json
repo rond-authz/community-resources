@@ -1,0 +1,49 @@
+{
+  "name": "kcd-uk-app",
+  "version": "0.1.0",
+  "description": "Workshop app for KCD UK 2022",
+  "license": "MIT",
+  "main": "src/index.js",
+  "scripts": {
+    "coverage": "npm run unit -- --coverage-report=text-summary",
+    "postcoverage": "tap --coverage-report=lcov --no-browser",
+    "lint": "eslint . --ignore-path=.gitignore",
+    "start": "lc39 src/index.js",
+    "start:local": "npm start -- --env-path ./default.env",
+    "test": "npm run lint && npm run unit",
+    "update-docker-version": "sed -i.bck \"s|version=\\\"[0-9]*\\.[0-9]*\\.[0-9]*.*\\\"|version=\\\"${npm_package_version}\\\"|\" Dockerfile",
+    "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
+    "unit": "tap -b ./**/*.test.js",
+    "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
+  },
+  "dependencies": {
+    "@fastify/env": "^3.0.0",
+    "@fastify/mongodb": "^5.0.0",
+    "@mia-platform/lc39": "^6.0.2",
+    "axios": "^1.1.3",
+    "fastify-plugin": "^3.0.1",
+    "http-errors": "^2.0.0",
+    "mongodb": "^4.12.0",
+    "ramda": "^0.28.0"
+  },
+  "devDependencies": {
+    "@mia-platform/eslint-config-mia": "^3.0.0",
+    "eslint": "^8.17.0",
+    "nock": "^13.2.9",
+    "pre-commit": "^1.2.2",
+    "tap": "^16.2.0"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "private": true,
+  "eslintConfig": {
+    "extends": "@mia-platform/eslint-config-mia"
+  },
+  "tap": {
+    "branches": 90,
+    "lines": 90,
+    "functions": 90,
+    "statements": 90
+  }
+}
