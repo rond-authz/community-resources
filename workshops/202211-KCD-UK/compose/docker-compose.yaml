@@ -33,7 +33,7 @@ services:
       - kcd_app_network
   
   app:
-    image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
+    image: ghcr.io/rond-authz/workshops/2022-kcd-uk:main
     container_name: app-kcd-workshop
     ports:
       - '40000:3000'

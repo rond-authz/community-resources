@@ -35,7 +35,7 @@ spec:
           - mountPath: /configurations
             name: extended-oas
       - name: application
-        image: ghcr.io/rond-authz/workshops/2022-kcd-uk:feat-complete-workshop
+        image: ghcr.io/rond-authz/workshops/2022-kcd-uk:main
         imagePullPolicy: Always
         env:
           - name: MONGODB_URL
