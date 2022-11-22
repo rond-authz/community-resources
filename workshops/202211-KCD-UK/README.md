@@ -28,6 +28,45 @@ Each inventory item has three fields:
 
 Please note that there is currently [limited support on policy for response flow](https://github.com/rond-authz/rond/issues/113), therefore the `GET /inventory` API will return limited data only with the Kubernetes setup.
 
+## Environment requirements and available setup
+
+### Kubernetes setup with Kind
+
+Create your cluster
+
+```sh
+kind create cluster --name=rond-kcduk --config ./kubefiles/kind.config.yaml
+```
+Run the application
+
+```sh
+sh ./kubefiles/boot.sh
+```
+
+Note: you can run this script whenever you have done some changes and want to deploy them in your cluster
+
+```sh
+kind delete cluster --name=rond-kcduk
+```
+
+By default the kubernetes cluster will be reachable on port `30000`.
+
+### Running with docker compose
+
+Boot the application
+
+```sh
+docker-compose -f compose/docker-compose.yaml up
+```
+
+Shut down the application with
+
+```sh
+docker-compose -f compose/docker-compose.yaml down
+```
+
+By default the application running with docker compose will be reachable on port `40000`.
+
 ## Workshop walkthrough
 
 ### Step 1 - Application
@@ -81,44 +120,6 @@ git checkout workshops/202211-KCD-UK-step3
       - logged users can only see items with `sku > 0` and have visiblity only for name and price
       - non logged users can only see items with `sku > 0` and have visiblity only for name
 
-## Environment requirements and available setup
-
-### Kubernetes setup with Kind
-
-Create your cluster
-
-```sh
-kind create cluster --name=rond-kcduk --config ./kubefiles/kind.config.yaml
-```
-Run the application
-
-```sh
-sh ./kubefiles/boot.sh
-```
-
-Note: you can run this script whenever you have done some changes and want to deploy them in your cluster
-
-```sh
-kind delete cluster --name=rond-kcduk
-```
-
-By default the kubernetes cluster will be reachable on port `30000`.
-
-### Running with docker compose
-
-Boot the application
-
-```sh
-docker-compose -f compose/docker-compose.yaml up
-```
-
-Shut down the application with
-
-```sh
-docker-compose -f compose/docker-compose.yaml down
-```
-
-By default the application running with docker compose will be reachable on port `40000`.
 
 ## Invoke APIs
 
