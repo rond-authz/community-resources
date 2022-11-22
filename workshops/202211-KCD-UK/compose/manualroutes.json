@@ -23,20 +23,6 @@
             "policyName": "allow_delete_inventory_item"
           }
         }
-      },
-      "get": {
-        "x-rond": {
-          "requestFlow": {
-            "policyName": "filter_inventory",
-            "generateQuery": true,
-            "queryOptions": {
-              "headerName": "x-security-query"
-            }
-          },
-          "responseFlow": {
-            "policyName": "protect_inventory_info"
-          }
-        }
       }
     }
   }

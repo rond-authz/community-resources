@@ -31,37 +31,3 @@ data:
     allow_delete_inventory_item {
       user_has_role("admin")
     }
-
-    filter_inventory {
-      user_has_role("admin")
-      query := data.resources[_]
-    } {
-      user_has_role("user")
-      query := data.resources[_]
-      query.sku > 0
-    } {
-      unlogged_request
-      query := data.resources[_]
-      query.sku > 0
-    }
-
-    protect_inventory_info [response] {
-      user_has_role("admin")
-      response := input.response.body
-    } {
-      user_has_role("user")
-      inventory_response_list := input.response.body
-      result := [new_item |
-        item := inventory_response_list[_]
-        new_item = object.remove(item, ["sku"])
-      ]
-      response := result
-    } {
-      unlogged_request
-      inventory_response_list := input.response.body
-      result := [new_item |
-        item := inventory_response_list[_]
-        new_item = object.remove(item, ["sku", "price"])
-      ]
-      response := result
-    }
