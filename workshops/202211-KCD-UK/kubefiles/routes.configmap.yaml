@@ -6,30 +6,6 @@ data:
   manualroutes.json: |
     {
       "paths": {
-        "/store-info": {
-          "get": {
-            "x-rond": {
-              "requestFlow": {
-                "policyName": "allow_all"
-              }
-            }
-          }
-        },
-        "/inventory": {
-          "post": {
-            "x-rond": {
-              "requestFlow": {
-                "policyName": "allow_create_new_inventory_item"
-              }
-            }
-          },
-          "delete": {
-            "x-rond": {
-              "requestFlow": {
-                "policyName": "allow_delete_inventory_item"
-              }
-            }
-          }
-        }
+
       }
     }
