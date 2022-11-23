@@ -36,7 +36,7 @@ spec:
             name: extended-oas
       - name: application
         image: ghcr.io/rond-authz/workshops/2022-kcd-uk:main
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
           - name: MONGODB_URL
             value: "mongodb://mongodb:27017/kcdapp"
