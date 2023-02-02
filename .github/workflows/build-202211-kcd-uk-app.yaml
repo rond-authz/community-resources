@@ -1,8 +1,14 @@
-name: Test and build
+name: Test and build 202211 KCD UK
 on:
   pull_request:
-    types: [opened]
+    branches:
+    - workshops/202211-KCD-UK*
+
   push:
+    branches:
+    - workshops/202211-KCD-UK*
+    - main
+
 jobs:
   tests:
     name: Test with
