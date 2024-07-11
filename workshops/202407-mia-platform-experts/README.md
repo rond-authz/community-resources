@@ -2,7 +2,7 @@
 
 Welcome to this workshop; today we are going to use Rönd to protect a simple application using Mia-Platform Console!
 
-> ![IMPORTANT]
+> [!IMPORTANT]
 > This workshop requires access to Mia-Platform Console as it has been proposed to the Mia-Platform Expert Office Hour Meeting.
 >
 > Mia-Platform Expert Program is open to anyone who wants to join, [find out more here][expert-program].
@@ -22,7 +22,7 @@ Rönd wil be in charge of performing authorization rules protecting the CRUD Ser
 
 #### Setup Project workloads
 
-> ![NOTE]
+> [!NOTE]
 > You should have access to a Project in Mia-Platform Console; if not proceed to [create one][create-project].
 
 ##### Services
@@ -69,7 +69,7 @@ spec:
 
 [kube-green][kube-green] will shut down the deployments in our environment once we are done with the workshop allowing us to prevent unwanted costs and recuding the carbon footprint of your work.
 
-> ![TIP]
+> [!TIP]
 > The kube-green SleepInfo custom resource can be found in the Expert marketplace
 
 Create the resource from the marketplace or from scratch by using the name `working-hours` and the manifest below:
