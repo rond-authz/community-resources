@@ -235,6 +235,12 @@ user_has_role(required_role) {
     role == required_role
 }
 
+unlogged_request {
+    not input.request.headers["Authorization"]
+} {
+    count(input.request.headers["Authorization"]) == 0
+}
+
 allow_create_new_inventory_item {
     user_has_role("admin")
 }
@@ -257,6 +263,11 @@ filter_inventory {
 ```
 
 ```diff
++unlogged_request {
++    not input.request.headers["Authorization"]
++} {
++    count(input.request.headers["Authorization"]) == 0
++}
 
 filter_inventory {
     user_has_role("admin")
@@ -273,8 +284,116 @@ filter_inventory {
 
 </details>
 
+#### Step 4. Provide only accessible data to users
 
----
+We are now filtering the inventory based on the user requesting the dataset, however there is still something missing from our authorization model.
+
+The last thing we want to do is only allow visibility to a subset of fields, specifically:
+
+- administrator users can see everything;
+- logged `user` roles should only see: `name`, `price` and `amountAvailable`;
+- non-logged users instead should only see the `name`.
+
+To achieve this we have to update the policy and change the route definition to feature a response policy:
+
+- `GET /inventory/`: `filter_inventory` (with query generation) and `protect_inventory_info` on response.
+
+<details>
+<summary>policies</summary>
+
+```go
+package policies
+
+user_has_role(required_role) {
+    authorization_jwt := input.request.headers["Authorization"][0]
+    decoded_jwt_data := io.jwt.decode(authorization_jwt)
+    decoded_jwt := decoded_jwt_data[1]
+    role := decoded_jwt["role"]
+    role == required_role
+}
+
+unlogged_request {
+    not input.request.headers["Authorization"]
+} {
+    count(input.request.headers["Authorization"]) == 0
+}
+
+allow_create_new_inventory_item {
+    user_has_role("admin")
+}
+
+allow_delete_inventory_item {
+    user_has_role("admin")
+}
+
+filter_inventory {
+    user_has_role("admin")
+    query := data.resources[_]
+} {
+    user_has_role("user")
+    query := data.resources[_]
+} {
+    unlogged_request
+    query := data.resources[_]
+    query.amountAvailable > 0
+}
+
+protect_inventory_info [response] {
+    user_has_role("admin")
+    response := input.response.body
+} {
+    user_has_role("user")
+    inventory_response_list := input.response.body
+    result := [new_item |
+        item := inventory_response_list[_]
+        new_item = object.filter(item, ["name", "amountAvailable", "price"])
+    ]
+    response := result
+} {
+    unlogged_request
+    inventory_response_list := input.response.body
+    result := [new_item |
+        item := inventory_response_list[_]
+        new_item = object.filter(item, ["name"])
+    ]
+    response := result
+}
+```
+
+```diff
++protect_inventory_info [response] {
++    user_has_role("admin")
++    response := input.response.body
++} {
++    user_has_role("user")
++    inventory_response_list := input.response.body
++    result := [new_item |
++        item := inventory_response_list[_]
++        new_item = object.filter(item, ["name", "amountAvailable", "price"])
++    ]
++    response := result
++} {
++    unlogged_request
++    inventory_response_list := input.response.body
++    result := [new_item |
++        item := inventory_response_list[_]
++        new_item = object.filter(item, ["name"])
++    ]
++    response := result
++}
+```
+
+</details>
+
+#### Wrap up
+
+With these steps we have successfully setup a working authorization model!
+
+Next steps and things to explore:
+
+- play around with more policies
+- read the [OpenPolicy Agent documentation][opa] and [Rego reference][rego]
+
 
 [expert-program]: https://events.mia-platform.eu/mia-platform-expert-community
 [envoy]: https://www.envoyproxy.io
@@ -286,3 +405,5 @@ filter_inventory {
 [create-endpoint]: https://docs.mia-platform.eu/docs/development_suite/api-console/api-design/endpoints
 [import-crud]: https://docs.mia-platform.eu/docs/development_suite/api-console/api-design/crud_advanced#how-to-create-the-fields-of-your-crud-by-importing-a-json
 [enable-rond]: https://docs.mia-platform.eu/docs/console/tutorials/protect-your-endpoints-with-policies#enable-r%C3%B6nd
+[opa]: https://www.openpolicyagent.org/docs/
+[rego]: https://www.openpolicyagent.org/docs/latest/policy-reference/
